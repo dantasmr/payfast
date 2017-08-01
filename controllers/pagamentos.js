@@ -34,7 +34,7 @@ module.exports = (app) => {
     const pagamento = req.body
     let errors = false;
     pagamento.status = "CRIADO"
-    pagamento.date = new Date
+    pagamento.data = new Date
 
     req.assert('forma_de_pagamento', 'Chave forma_de_pagamento é obrigátoria').notEmpty()
     req.assert('valor', 'Chave valor é obrigátoria').notEmpty()
@@ -48,37 +48,15 @@ module.exports = (app) => {
       const connection = app.persistencia.connectionFactory()
       const pagamentoDao = new app.persistencia.PagamentoDao(connection)
 
+      
+
+
+
       pagamentoDao.salva(pagamento, (err, result, fields) => {
         if (!err) {
           const resposta = {
             data: pagamento,
-            links: [
-              {
-                method: 'PUT',
-                href: `http://localhost:3000/pagamento/${result.insertId}`,
-                rel: 'cofirma'
-              },
-              {
-                method: 'DELETE',
-                href: `http://localhost:3000/pagamento/${result.insertId}`,
-                rel: 'cancelar'
-              },
-              {
-                method: 'GET',
-                href: `http://localhost:3000/pagamento/${result.insertId}`,
-                rel: 'confirma'
-              },
-              {
-                method: 'PATCH',
-                href: `http://localhost:3000/pagamento/${result.insertId}`,
-                rel: 'cofirma'
-              },
-              {
-                method: 'OPTION',
-                href: `http://localhost:3000/pagamento`,
-                rel: 'head'
-              }
-            ]
+            links: app.config.links.getLinks(result.insertId)            
           }
           res.status(201).json(resposta)
         } else {
