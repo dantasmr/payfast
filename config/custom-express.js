@@ -3,8 +3,10 @@ module.exports = function() {
   const load = require('express-load')
   const bodyParser = require('body-parser')
   const app = express()
+  const expressValidator = require('express-validator')
 
   app.use(bodyParser.json())
+  app.use(expressValidator())
 
   load('controllers').then('persistencia').into(app)
 
